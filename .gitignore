@@ -20,3 +20,7 @@ tools/static-analysis/reports/
 *.gcda
 *.gcno
 coverage/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db

@@ -160,6 +160,40 @@ ifeq ($(TESTWOLFCRYPT),1)
 	DEF += -DWOLFHSM_CFG_TEST_WOLFCRYPTTEST
 endif
 
+
+# Support Caliptra hw-model integration test (Architecture B).
+# Boots the Caliptra hw-model emulator, registers wc_caliptra_cb, and
+# exercises wolfHSM + Caliptra crypto via wolfCrypt CryptoCb.
+#
+# Prerequisites:
+#   ~/caliptra/target/debug/libcaliptra_hw_model_c_binding.a
+#   ~/caliptra/hw-model/c-binding/out/{caliptra_model.h,image_bundle.bin}
+#   ~/caliptra/rom/ci_frozen_rom/2.1/caliptra-rom-2.1.0-a72a76f.bin
+#
+# Usage: make CALIPTRA_HWMODEL=1 CSTD=-std=c99
+ifeq ($(CALIPTRA_HWMODEL),1)
+    CALIPTRA_ROOT  ?= $(HOME)/caliptra
+    HWMODEL_OUT     = $(CALIPTRA_ROOT)/hw-model/c-binding/out
+    HWMODEL_LIB     = $(CALIPTRA_ROOT)/target/debug/libcaliptra_hw_model_c_binding.a
+    ROM_PATH       ?= $(CALIPTRA_ROOT)/rom/ci_frozen_rom/2.1/caliptra-rom-2.1.0-a72a76f.bin
+    FW_PATH        ?= $(HWMODEL_OUT)/image_bundle.bin
+
+    DEF  += -DWOLFHSM_CFG_TEST_CALIPTRA_HWMODEL
+    # WOLFSSL_CALIPTRA gates caliptra_port.c compilation;
+    # WOLF_CRYPTO_CB_FREE is required to avoid CaliptraShaCtx leaks on abort.
+    # WOLF_CRYPTO_CB and HAVE_ANONYMOUS_INLINE_AGGREGATES are already defined
+    # in test/config/user_settings.h.
+    DEF  += -DWOLFSSL_CALIPTRA -DWOLF_CRYPTO_CB_FREE
+    DEF  += -DCALIPTRA_ROM_PATH='"$(ROM_PATH)"'
+    DEF  += -DCALIPTRA_FW_PATH='"$(FW_PATH)"'
+    INC  += -I$(HWMODEL_OUT)
+    INC  += -I$(WOLFHSM_DIR)/port/caliptra
+    SRC_C += $(WOLFHSM_DIR)/port/caliptra/caliptra_hwmodel.c
+    SRC_C += $(WOLFSSL_DIR)/wolfcrypt/src/port/caliptra/caliptra_port.c
+    LIBS  += $(HWMODEL_LIB) -lpthread -lstdc++ -ldl -lrt -lm
+endif
+
+
 ifeq ($(CLIENT_ONLY),1)
 # Build a client-only test driver to connect to a remote server
     DEF += -DWOLFHSM_CFG_ENABLE_CLIENT

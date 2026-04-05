@@ -58,6 +58,14 @@
 #include "wh_test_server_img_mgr.h"
 #endif
 
+
+#if defined(WOLFHSM_CFG_TEST_CALIPTRA_HWMODEL) && \
+    !defined(WOLFHSM_CFG_NO_CRYPTO)             && \
+    defined(WOLF_CRYPTO_CB)
+#include "wh_test_caliptra_hwmodel.h"
+#endif
+
+
 #if defined(WOLFHSM_CFG_TEST_POSIX) && defined(WOLFHSM_CFG_ENABLE_CLIENT)
 #include "port/posix/posix_transport_tcp.h"
 #if defined(WOLFHSM_CFG_TEST_CLIENT_ONLY) && defined(WOLFHSM_CFG_TLS)
@@ -95,6 +103,14 @@ int whTest_Unit(void)
     /* Comm tests */
     WH_TEST_ASSERT(0 == whTest_Comm());
     WH_TEST_ASSERT(0 == whTest_ClientServer());
+
+
+#if defined(WOLFHSM_CFG_TEST_CALIPTRA_HWMODEL) && \
+    !defined(WOLFHSM_CFG_NO_CRYPTO)             && \
+    defined(WOLF_CRYPTO_CB)
+    WH_TEST_ASSERT(0 == whTest_CaliptraHwmodel());
+#endif
+
 
 #ifndef WOLFHSM_CFG_NO_CRYPTO
     /* Crypto Tests */
