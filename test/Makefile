@@ -160,6 +160,16 @@ ifeq ($(TESTWOLFCRYPT),1)
 	DEF += -DWOLFHSM_CFG_TEST_WOLFCRYPTTEST
 endif
 
+# Support Caliptra transport test (POSIX only; requires C99 or later).
+# Adds the Caliptra transport source and wires in the in-memory mailbox shim
+# from test/caliptra_if.h + wh_test_caliptra_transport.c.
+# Usage: make CALIPTRA=1 [CSTD=-std=c99]
+ifeq ($(CALIPTRA),1)
+    DEF  += -DWOLFHSM_CFG_TEST_CALIPTRA
+    SRC_C += $(WOLFHSM_DIR)/port/caliptra/wh_transport_caliptra.c
+    # test/ (PROJECT_DIR) is already on INC, so test/caliptra_if.h is found.
+endif
+
 ifeq ($(CLIENT_ONLY),1)
 # Build a client-only test driver to connect to a remote server
     DEF += -DWOLFHSM_CFG_ENABLE_CLIENT

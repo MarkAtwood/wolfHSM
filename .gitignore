@@ -20,3 +20,8 @@ tools/static-analysis/reports/
 *.gcda
 *.gcno
 coverage/
+
+# Beads issue tracker
+.beads/
+.beads-credential-key
+CLAUDE.md

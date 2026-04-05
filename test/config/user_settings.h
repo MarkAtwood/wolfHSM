@@ -45,8 +45,11 @@
 #define WOLFSSL_IGNORE_FILE_WARN
 
 
-/* For ACert support (also requires WOLFSSL_ASN_TEMPLATE) */
+/* For ACert support (also requires WOLFSSL_ASN_TEMPLATE).
+ * OPENSSL_EXTRA_X509_SMALL is required so that CopyDateToASN1_TIME and
+ * WOLFSSL_ASN1_TIME (used by CopyDecodedAcertToX509) are compiled in. */
 #define WOLFSSL_ACERT
+#define OPENSSL_EXTRA_X509_SMALL
 
 /* The following settings reduce memory footprint when not using the TLS
  * transport. If TLS is needed, these settings should be removed. */
